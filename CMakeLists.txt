@@ -7,4 +7,9 @@ set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE})
 set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
 cmake_policy(SET CMP0141 NEW)
 
-add_executable(sccache-demo main.cpp)
+add_executable(sccache-demo
+    main.cpp
+    a.cpp
+    b.cpp
+    c.cpp
+)

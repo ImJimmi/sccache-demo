@@ -32,8 +32,8 @@ jobs:
             -Bbuild \
             -G"Visual Studio 17 2022" \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+            -DCMAKE_C_COMPILER_LAUNCHER=${SCCACHE_PATH} \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=${SCCACHE_PATH}
           cmake \
             --build build \
             --config Release

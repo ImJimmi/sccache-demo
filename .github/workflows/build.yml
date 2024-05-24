@@ -28,7 +28,7 @@ jobs:
         run: |
           cmake \
             -B build \
-            -G "Visual Studio 2017" \
+            -G "Visual Studio 17 2022" \
             -D CMAKE_BUILD_TYPE=Debug \
             -D CMAKE_C_COMPILER_LAUNCHER=sccache \
             -D CMAKE_CXX_COMPILER_LAUNCHER=sccache

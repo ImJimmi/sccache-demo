@@ -33,7 +33,9 @@ jobs:
             -G"Visual Studio 17 2022" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_C_COMPILER_LAUNCHER=${SCCACHE_PATH} \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=${SCCACHE_PATH}
+            -DCMAKE_CXX_COMPILER_LAUNCHER=${SCCACHE_PATH} \
+            -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded \
+            -DCMAKE_POLICY_CMP0141=NEW
           cmake \
             --build build \
             --config Release

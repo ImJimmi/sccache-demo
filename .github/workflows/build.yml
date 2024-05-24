@@ -3,35 +3,38 @@ name: sccache demo
 on: [push]
 
 env:
-  SCCACHE_GHA_ENABLED: "true"
+    SCCACHE_GHA_ENABLED: "true"
 
 jobs:
-  Build:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
+    Build:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Configure sccache
-        uses: actions/github-script@v6
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+            - name: Configure sccache
+              uses: actions/github-script@v6
+              with:
+                  script: |
+                      core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+                      core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.3
+            - name: Run sccache-cache
+              uses: mozilla-actions/sccache-action@v0.0.3
 
-      - name: Run sccache stat for check
-        shell: bash
-        run: ${SCCACHE_PATH} --show-stats
+            - name: Run sccache stat for check
+              shell: bash
+              run: ${SCCACHE_PATH} --show-stats
 
-      - name: Build
-        shell: bash
-        run: |
-          cmake \
-            -Bbuild \
-            -G"Visual Studio 17 2022" \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake \
-            --build build \
-            --config Release
+            - name: Install Ninja
+              run: choco install ninja
+
+            - name: Build
+              shell: bash
+              run: |
+                  cmake \
+                    -Bbuild \
+                    -GNinja \
+                    -DCMAKE_BUILD_TYPE=Release
+                  cmake \
+                    --build build \
+                    --config Release

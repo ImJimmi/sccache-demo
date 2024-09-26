@@ -1,6 +1,10 @@
 name: sccache demo
 
-on: [push]
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 env:
     SCCACHE_GHA_ENABLED: "true"

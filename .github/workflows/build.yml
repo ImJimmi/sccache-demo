@@ -4,6 +4,7 @@ on: [push]
 
 env:
     SCCACHE_GHA_ENABLED: "true"
+    CMAKE_BUILD_DIR: "./build"
 
 jobs:
     Build:
@@ -11,30 +12,40 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Configure sccache
-              uses: actions/github-script@v6
+            - name: Set CMake Build Cache Keys
+              run: |
+                  chmod +x ./.github/workflows/find-ideal-cache-key.sh
+                  ./.github/workflows/find-ideal-cache-key.sh "${{matrix.platform}}" "${{github.base_ref}}"
+                  echo "CMAKE_BUILD_CACHE_RESTORE_KEY=$(cat ./restore.cachekey)" >> $GITHUB_ENV
+                  echo "CMAKE_BUILD_CACHE_SAVE_KEY=$(cat ./save.cachekey)" >> $GITHUB_ENV
+
+            - name: CMake Build Cache
+              id: cmake-build-cache
+              uses: actions/cache/restore@v4
               with:
-                  script: |
-                      core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-                      core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+                path: ${{ env.CMAKE_BUILD_DIR }}
+                key: ${{ env.CMAKE_BUILD_CACHE_RESTORE_KEY }}
 
             - name: Run sccache-cache
-              uses: mozilla-actions/sccache-action@v0.0.3
+              uses: mozilla-actions/sccache-action@v0.0.5
 
-            - name: Run sccache stat for check
+            - name: Generate
               shell: bash
-              run: ${SCCACHE_PATH} --show-stats
+              run: |
+                  cmake \
+                    -B${{ env.CMAKE_BUILD_DIR }} \
+                    -DCMAKE_BUILD_TYPE=Release
 
-            - name: Install Ninja
-              run: choco install ninja
+            - name: Save CMake Build Cache
+              uses: actions/cache/save@v4
+              if: always() && env.CMAKE_BUILD_CACHE_RESTORE_KEY != env.CMAKE_BUILD_CACHE_SAVE_KEY
+              with:
+                  path: ${{ env.CMAKE_BUILD_DIR }}
+                  key: ${{ env.CMAKE_BUILD_CACHE_SAVE_KEY }}
 
             - name: Build
               shell: bash
               run: |
                   cmake \
-                    -Bbuild \
-                    -GNinja \
-                    -DCMAKE_BUILD_TYPE=Release
-                  cmake \
-                    --build build \
+                    --build ${{ env.CMAKE_BUILD_DIR }} \
                     --config Release

@@ -15,7 +15,7 @@ jobs:
             - name: Set CMake Build Cache Keys
               run: |
                   chmod +x ./.github/workflows/find-ideal-cache-key.sh
-                  ./.github/workflows/find-ideal-cache-key.sh "${{matrix.platform}}" "${{github.base_ref}}"
+                  ./.github/workflows/find-ideal-cache-key.sh "windows-latest" "${{ github.base_ref }}"
                   echo "CMAKE_BUILD_CACHE_RESTORE_KEY=$(cat ./restore.cachekey)" >> $GITHUB_ENV
                   echo "CMAKE_BUILD_CACHE_SAVE_KEY=$(cat ./save.cachekey)" >> $GITHUB_ENV
 

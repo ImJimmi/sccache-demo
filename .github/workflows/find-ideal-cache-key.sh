@@ -10,6 +10,9 @@ function hash_file {
     fi
 }
 
+echo "norestore" >./restore.cachekey
+echo "nosave" > ./save.cachekey
+
 if git branch --show-current | grep -q "main"; then
     echo "$(git rev-parse HEAD)" >./restore.cachekey
     echo "$(git rev-parse HEAD)" >./save.cachekey
